@@ -1,0 +1,44 @@
+{
+  "name": "id2023-teama",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@bryntum/scheduler": "npm:@bryntum/scheduler-trial@^5.5.3",
+    "@bryntum/scheduler-react": "^5.5.3",
+    "@emotion/react": "^11.11.1",
+    "@mantine/core": "^6.0.20",
+    "@mantine/hooks": "^6.0.20",
+    "@types/node": "^12.6.8",
+    "@types/react-dom": "^16.8.5",
+    "date-fns": "^2.30.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "^4.0.3",
+    "typescript": "^3.9.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "babel-preset-react-app": "npm:@bryntum/babel-preset-react-app@^10.0.0",
+    "sass": "~1.42.0"
+  }
+}
