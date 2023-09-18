@@ -1,9 +1,7 @@
 /**
  * Main Application script
  */
-import React, { FunctionComponent, useRef } from "react";
-import { BryntumScheduler, BryntumSplitter } from "@bryntum/scheduler-react";
-import { useSchedulerConfig } from "./SchedulerConfig";
+import React, { FunctionComponent } from "react";
 import "./App.scss";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
