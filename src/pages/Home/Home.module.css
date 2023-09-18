@@ -1,0 +1,13 @@
+.home {
+  background: linear-gradient(
+    90deg,
+    rgba(106, 77, 191, 1) 0%,
+    rgba(132, 77, 191, 1) 51%,
+    rgba(159, 77, 191, 1) 100%
+  );
+  color: white;
+}
+
+.imageContainer {
+  margin-left: 50px;
+}
