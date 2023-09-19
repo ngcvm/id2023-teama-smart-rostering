@@ -8,13 +8,18 @@ import App from "./App";
 import { MantineProvider } from "@mantine/core";
 import { theme } from "./theme";
 import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 function EntryPoint() {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>
     </MantineProvider>
   );
 }

@@ -2,329 +2,178 @@
  * Application configuration
  */
 import { BryntumSchedulerProps } from "@bryntum/scheduler-react";
+import { useQuery } from "react-query";
+import { getRosterTemplate, postPopulateRosterWithEmployees } from "./apis";
+import { useState } from "react";
+import { AssignedEmployee, Shift } from "./types";
+import { AppConfig } from "./config";
+import {
+  generatePlaceHolderEvents,
+  generatePlaceHolderResources,
+} from "./services/schedulerResolver";
+import React from "react";
 
-const today = new Date();
+type SchedulerConfigHook = {
+  configs: BryntumSchedulerProps[];
+  populateRosterWithEmployees: () => void;
+  isLoading: boolean;
+  assignedEmployees: AssignedEmployee[] | undefined;
+};
 
-export const useSchedulerConfig = () => {
-  const schedulerConfig1: BryntumSchedulerProps = {
-    flex: "1 1 50%",
-    startDate: new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      6,
-      0,
-      0
-    ),
-    endDate: new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      0,
-      0
-    ),
-    useInitialAnimation: "slide-from-left",
-    viewPreset: "hourAndDay",
+export const useSchedulerConfig = (): SchedulerConfigHook => {
+  const [configs, setConfigs] = useState<BryntumSchedulerProps[]>([]);
+  const { data: scheduleTemplate } = useQuery(
+    "scheduleTemplate",
+    async () => await getRosterTemplate()
+  );
 
-    barMargin: 10,
+  React.useEffect(() => {
+    if (!!scheduleTemplate) {
+      const baseDate = new Date(scheduleTemplate?.date as string);
+      const shifts = scheduleTemplate?.shifts as Shift[];
+      const shiftGroupByDepartmentId = shifts?.reduce((group: any, product) => {
+        const { departmentId } = product;
+        group[departmentId] = group[departmentId] ?? [];
+        group[departmentId].push(product);
+        return group;
+      }, {});
 
-    stripeFeature: true,
-    sortFeature: true,
+      const returnConfigs = Object.keys(shiftGroupByDepartmentId)?.map(
+        (departmentId: string | number) => {
+          const departmentDetails = scheduleTemplate?.departments?.find(
+            (x) => x.id?.toString() === departmentId.toString()
+          );
 
-    eventDragFeature: {
-      constrainDragToTimeline: false,
+          const shifts = shiftGroupByDepartmentId[departmentId];
+          const placeholders = generatePlaceHolderResources(shifts);
+          const events = generatePlaceHolderEvents(shifts, baseDate);
+
+          return {
+            flex: "1 1 50%",
+            startDate: new Date(
+              baseDate.getFullYear(),
+              baseDate.getMonth(),
+              baseDate.getDate(),
+              AppConfig.startWorkingHour,
+              0,
+              0
+            ),
+            endDate: new Date(
+              baseDate.getFullYear(),
+              baseDate.getMonth(),
+              baseDate.getDate(),
+              AppConfig.endWorkingHour,
+              0,
+              0
+            ),
+            useInitialAnimation: "slide-from-left",
+            viewPreset: "hourAndDay",
+
+            barMargin: 10,
+
+            stripeFeature: true,
+            sortFeature: true,
+
+            eventDragFeature: {
+              constrainDragToTimeline: false,
+            },
+
+            columns: [
+              {
+                text: departmentDetails?.name ?? "N/A",
+                width: 150,
+                field: "name",
+              },
+            ],
+            resources: placeholders,
+
+            events: events,
+            timeRangesFeature: true,
+            timeRanges: [
+              {
+                id: "lunch",
+                startDate: new Date(
+                  baseDate.getFullYear(),
+                  baseDate.getMonth(),
+                  baseDate.getDate(),
+                  12,
+                  0,
+                  0
+                ),
+                endDate: new Date(
+                  baseDate.getFullYear(),
+                  baseDate.getMonth(),
+                  baseDate.getDate(),
+                  13,
+                  0,
+                  0
+                ),
+                name: "Lunch",
+                iconCls: "b-fa b-fa-flag",
+              },
+              {
+                id: "dinner",
+                startDate: new Date(
+                  baseDate.getFullYear(),
+                  baseDate.getMonth(),
+                  baseDate.getDate(),
+                  18,
+                  0,
+                  0
+                ),
+                endDate: new Date(
+                  baseDate.getFullYear(),
+                  baseDate.getMonth(),
+                  baseDate.getDate(),
+                  19,
+                  0,
+                  0
+                ),
+                name: "Dinner",
+                iconCls: "b-fa b-fa-flag",
+              },
+            ],
+          };
+        }
+      );
+      setConfigs(returnConfigs);
+    } else {
+      setConfigs([]);
+    }
+  }, [scheduleTemplate]);
+
+  const {
+    data: assignedEmployees,
+    refetch: populateRosterWithEmployees,
+    isLoading,
+    isFetching,
+    isRefetching,
+  } = useQuery(
+    ["populateRosterWithEmployees"],
+    async (): Promise<AssignedEmployee[] | undefined> => {
+      return await postPopulateRosterWithEmployees(scheduleTemplate?.shifts);
     },
+    {
+      onSuccess: (data) => {
+        const nextConfigs = [...configs];
+        nextConfigs[0].resources = data?.map((assigned, index) => ({
+          id: index,
+          name: assigned?.employee?.name,
+        }));
+        setConfigs(nextConfigs);
+        return data;
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      enabled: false,
+    }
+  );
 
-    columns: [
-      {
-        type: "resourceInfo",
-        text: "Marvel office",
-        width: "15em",
-      },
-    ],
-    resources: [
-      { id: 1, name: "Ironman" },
-      { id: 2, name: "Thor" },
-      { id: 3, name: "Spiderman" },
-      { id: 4, name: "Black Widow" },
-      { id: 5, name: "Rocket racoon" },
-      { id: 6, name: "Starlord" },
-    ],
-
-    events: [
-      {
-        id: 1,
-        resourceId: 1,
-        name: "Day shift",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          6,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          12,
-          0,
-          0
-        ),
-        eventColor: "red",
-      },
-      {
-        id: 2,
-        resourceId: 2,
-        name: "Afternoon shift",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          13,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          18,
-          0,
-          0
-        ),
-        eventColor: "blue",
-      },
-      {
-        id: 3,
-        resourceId: 3,
-        name: "Afternoon shift",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          19,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          22,
-          0,
-          0
-        ),
-        eventColor: "green",
-      },
-    ],
-    timeRangesFeature: true,
-    timeRanges: [
-      {
-        id: "lunch",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          12,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          13,
-          0,
-          0
-        ),
-        name: "Lunch",
-        iconCls: "b-fa b-fa-flag",
-      },
-      {
-        id: "dinner",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          18,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          19,
-          0,
-          0
-        ),
-        name: "Dinner",
-        iconCls: "b-fa b-fa-flag",
-      },
-    ],
+  return {
+    configs,
+    populateRosterWithEmployees,
+    isLoading: isLoading || isFetching || isRefetching,
+    assignedEmployees,
   };
-
-  const schedulerConfig2: BryntumSchedulerProps = {
-    startDate: new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      6,
-      0,
-      0
-    ),
-    endDate: new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      0,
-      0
-    ),
-    useInitialAnimation: "slide-from-left",
-    viewPreset: "hourAndDay",
-    flex: "1 1 50%",
-
-    barMargin: 10,
-
-    stripeFeature: true,
-    sortFeature: true,
-
-    eventDragFeature: {
-      constrainDragToTimeline: false,
-    },
-
-    columns: [
-      {
-        type: "resourceInfo",
-        text: "DC office",
-        width: "15em",
-      },
-    ],
-    resources: [
-      { id: 1, name: "Batman" },
-      { id: 2, name: "Flash" },
-      { id: 3, name: "Superman" },
-      { id: 4, name: "Wonder Woman" },
-      { id: 5, name: "Aquaman" },
-    ],
-
-    events: [
-      {
-        id: 1,
-        resourceId: 1,
-        name: "Day shift",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          6,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          12,
-          0,
-          0
-        ),
-        eventColor: "red",
-      },
-      {
-        id: 2,
-        resourceId: 2,
-        name: "Afternoon shift",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          13,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          18,
-          0,
-          0
-        ),
-        eventColor: "blue",
-      },
-      {
-        id: 3,
-        resourceId: 3,
-        name: "Afternoon shift",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          19,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          22,
-          0,
-          0
-        ),
-        eventColor: "green",
-      },
-    ],
-    timeRangesFeature: true,
-    timeRanges: [
-      {
-        id: "lunch",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          12,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          13,
-          0,
-          0
-        ),
-        name: "Lunch",
-        iconCls: "b-fa b-fa-flag",
-      },
-      {
-        id: "dinner",
-        startDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          18,
-          0,
-          0
-        ),
-        endDate: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          19,
-          0,
-          0
-        ),
-        name: "Dinner",
-        iconCls: "b-fa b-fa-flag",
-      },
-    ],
-  };
-  return [schedulerConfig1, schedulerConfig2];
 };
