@@ -9,6 +9,7 @@ export const getRosterTemplate = async (): Promise<RosterTemplate> => {
   return await new Promise((resolve) =>
     setTimeout(() => resolve(createRosterTemplate()), 1000)
   );
+  // eslint-disable-next-line no-unreachable
   return await requestClient.get("/roster/template");
 };
 
@@ -21,5 +22,6 @@ export const postPopulateRosterWithEmployees = async (
       5 * 1000
     )
   );
+  // eslint-disable-next-line no-unreachable
   return await requestClient.post("/roster/populate");
 };
