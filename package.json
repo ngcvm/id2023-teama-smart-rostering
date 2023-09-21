@@ -3,23 +3,30 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@aws-crypto/sha256-js": "^5.0.0",
     "@bryntum/scheduler": "npm:@bryntum/scheduler-trial@^5.5.3",
     "@bryntum/scheduler-react": "^5.5.3",
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
-    "@mantine/core": "^6.0.20",
-    "@mantine/hooks": "^6.0.20",
+    "@mantine/core": "^7.0.0",
+    "@mantine/dropzone": "^7.0.0",
+    "@mantine/hooks": "^7.0.0",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@smithy/signature-v4": "^2.0.9",
+    "@tabler/icons-react": "^2.34.0",
     "@types/faker": "^6.6.9",
     "@types/node": "^12.6.8",
-    "@types/react-dom": "^16.8.5",
     "axios": "^1.5.0",
     "date-fns": "^2.30.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "papaparse": "^5.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-query": "^3.39.3",
+    "react-redux": "^8.1.2",
     "react-router-dom": "^6.16.0",
     "react-scripts": "^5.0.1",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -43,7 +50,12 @@
     ]
   },
   "devDependencies": {
+    "@types/papaparse": "^5.3.8",
+    "@types/react-dom": "^18.2.7",
     "babel-preset-react-app": "npm:@bryntum/babel-preset-react-app@^10.0.0",
+    "postcss": "^8.4.30",
+    "postcss-preset-mantine": "^1.7.0",
+    "postcss-simple-vars": "^7.0.1",
     "sass": "~1.42.0"
   }
 }

@@ -16,7 +16,7 @@ export const createRosterTemplate = (): RosterTemplate => {
     departments: [
       {
         id: 0,
-        name: "Test",
+        name: "Demo Department",
       },
     ],
     shifts: [

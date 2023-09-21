@@ -3,15 +3,16 @@
  */
 import { BryntumSchedulerProps } from "@bryntum/scheduler-react";
 import { useQuery } from "react-query";
-import { getRosterTemplate, postPopulateRosterWithEmployees } from "./apis";
+import { getRosterTemplate, postPopulateRosterWithEmployees } from "../apis";
 import { useState } from "react";
-import { AssignedEmployee, Shift } from "./types";
-import { AppConfig } from "./config";
+import { AssignedEmployee, Shift } from "../types";
+import { AppConfig } from "../config";
 import {
   generatePlaceHolderEvents,
   generatePlaceHolderResources,
-} from "./services/schedulerResolver";
+} from "../services/schedulerResolver";
 import React from "react";
+import { useAppSelector } from "./reduxHooks";
 
 type SchedulerConfigHook = {
   configs: BryntumSchedulerProps[];
@@ -22,9 +23,14 @@ type SchedulerConfigHook = {
 
 export const useSchedulerConfig = (): SchedulerConfigHook => {
   const [configs, setConfigs] = useState<BryntumSchedulerProps[]>([]);
+  const currentDate = useAppSelector((state) => state.app.currentDate);
+  const operaData = useAppSelector((state) => state.app.operaData);
   const { data: scheduleTemplate } = useQuery(
     "scheduleTemplate",
-    async () => await getRosterTemplate()
+    async () => await getRosterTemplate(operaData?.data),
+    {
+      enabled: !!operaData,
+    }
   );
 
   React.useEffect(() => {

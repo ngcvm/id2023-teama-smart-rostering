@@ -1,5 +1,5 @@
 export const AppConfig = {
-  orgName: "Superhero Inc.",
+  orgName: "ID2023 Team A",
   startWorkingHour: 7,
   endWorkingHour: 24,
 };
