@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { Button, Text, Image, Flex, Box, Space, Title } from "@mantine/core";
+import { Button, Image, Flex, Box, Space, Title } from "@mantine/core";
 import RosterImage from "./roster-image.svg";
 import { useNavigate } from "react-router-dom";
 import HomeCss from "./Home.module.css";
