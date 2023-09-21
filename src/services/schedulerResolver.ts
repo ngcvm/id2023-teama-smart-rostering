@@ -1,8 +1,15 @@
-import { addDays, startOfWeek } from "date-fns";
+import { addDays } from "date-fns";
 import { ShiftTypes } from "../constants/shiftTypes";
-import { OperaPredict, Shift, ShiftDetails } from "../types";
+import {
+  AssignedEmployee,
+  OperaPredict,
+  Shift,
+  ShiftDetails,
+  ShiftEmployeeScore,
+} from "../types";
 import { ResourceModel, ResourceModelConfig } from "@bryntum/scheduler";
 import { Departments } from "../constants/departments";
+import { faker } from "@faker-js/faker";
 
 export const MorningShift: ShiftDetails = {
   label: "Morning Shift",
@@ -95,6 +102,7 @@ const generateRoster = (
   let result = [];
   for (let i = 0; i < numberOfShift; i++) {
     result.push({
+      shiftId: faker.string.uuid(),
       shiftType: shiftType,
       departmentId: departmentId,
     });
@@ -110,9 +118,7 @@ export const generateRosterTemplates = (
   const morningShiftsCount = Math.round(prediction.morning[0]);
   const afternoonShiftsCount = Math.round(prediction.day[0]);
   const nightShiftsCount = Math.round(prediction.night[0]);
-  console.log("morningShiftsCount", morningShiftsCount);
-  console.log("afternoonShiftsCount", afternoonShiftsCount);
-  console.log("nightShiftsCount", nightShiftsCount);
+
   return {
     date: date.toString(),
     departments: [
@@ -147,4 +153,59 @@ export const getDateFromDayOfWeek = (dayOfWeek: number) => {
   } else {
     return addDays(todayNextWeek, 7 + diff);
   }
+};
+
+const getShiftPredictKey = (shiftTypes: ShiftTypes) => {
+  return `y${shiftTypes + 1}`;
+};
+
+export const assignStaffsToShifts = (
+  staffIds: number[],
+  shifts: Shift[],
+  predictions: ShiftEmployeeScore[]
+): AssignedEmployee[] | undefined => {
+  return shifts.map((shift, index) => {
+    const shiftPredictKey = getShiftPredictKey(shift.shiftType);
+    const staffIndex = getStaffIndexBasedOnShiftScore(
+      shiftPredictKey,
+      predictions
+    );
+
+    predictions[staffIndex][shiftPredictKey] = [-99999999];
+
+    return {
+      employee: {
+        name: `User #${staffIds[staffIndex]}`,
+        id: staffIds[staffIndex],
+        deparment: "Housekeeping",
+        departmentId: 1,
+      },
+      shiftId: shift.shiftId,
+    } as unknown as AssignedEmployee;
+  }) as AssignedEmployee[];
+};
+
+export const getStaffIndexBasedOnShiftScore = (
+  shiftTypePredictKey: string, // y1, y2, y3
+  prediction: ShiftEmployeeScore[]
+): number => {
+  // Return index of the staff with highest y1 score
+  const staffIndex = prediction.findIndex((item) => {
+    const highestScore = Math.max(
+      ...prediction.map((item) => item[shiftTypePredictKey][0])
+    ).toString();
+    const currentScore = item[shiftTypePredictKey].toString();
+    console.log(currentScore, highestScore);
+
+    return (
+      currentScore ===
+      Math.max(
+        ...prediction.map((item) => item[shiftTypePredictKey][0])
+      )?.toString()
+    );
+  });
+
+  console.log(staffIndex);
+
+  return staffIndex;
 };

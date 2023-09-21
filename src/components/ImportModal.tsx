@@ -1,5 +1,14 @@
 import * as React from "react";
-import { Box, Button, Group, Modal, Space, Text, rem } from "@mantine/core";
+import {
+  Alert,
+  Box,
+  Button,
+  Group,
+  Modal,
+  Space,
+  Text,
+  rem,
+} from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import { IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
 import {
@@ -37,7 +46,6 @@ const ImportModal = ({ isOpen, onClose }: ImportModalProps) => {
   };
   return (
     <Modal opened={isOpen} onClose={onClose} title="Import roster data">
-      <Modal.Header></Modal.Header>
       <Modal.Body>
         <Box>
           <Dropzone
@@ -158,6 +166,16 @@ const ImportModal = ({ isOpen, onClose }: ImportModalProps) => {
           {!!rosterEmployeeFile && <Text>{rosterEmployeeFile.name}</Text>}
         </Box>
         <Space h={10} />
+
+        {!!error && (
+          <>
+            <Alert color="red" title={error}>
+              Failed to parse data
+            </Alert>
+            <Space h={10} />
+          </>
+        )}
+
         <Box>
           <Button
             disabled={!rosterDataFile || !rosterEmployeeFile}

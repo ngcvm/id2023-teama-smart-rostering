@@ -21,6 +21,7 @@ export interface ShiftEvent {
 }
 
 export interface Shift {
+  shiftId: string | number;
   shiftType: ShiftTypes;
   departmentId: string | number;
 }
@@ -65,4 +66,21 @@ export interface OperaPredict {
   day: number[];
   morning: number[];
   night: number[];
+}
+
+export interface RosterEmployeeParsedItem {
+  employeeId: number;
+  age: number;
+  yearsOfExperience: number;
+  dayOfWeek: number;
+  dayOfMonth: number;
+  monthOfYear: number;
+}
+
+export interface RosterEmployeePredictResponse {
+  predictions: ShiftEmployeeScore[];
+}
+
+export interface ShiftEmployeeScore {
+  [key: string]: [number];
 }

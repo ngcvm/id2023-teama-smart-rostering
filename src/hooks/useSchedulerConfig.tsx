@@ -23,8 +23,10 @@ type SchedulerConfigHook = {
 
 export const useSchedulerConfig = (): SchedulerConfigHook => {
   const [configs, setConfigs] = useState<BryntumSchedulerProps[]>([]);
-  const currentDate = useAppSelector((state) => state.app.currentDate);
   const operaData = useAppSelector((state) => state.app.operaData);
+  const employeesData = useAppSelector(
+    (state) => state.app.rosterEmployeesData
+  );
   const { data: scheduleTemplate } = useQuery(
     "scheduleTemplate",
     async () => await getRosterTemplate(operaData?.data),
@@ -157,7 +159,10 @@ export const useSchedulerConfig = (): SchedulerConfigHook => {
   } = useQuery(
     ["populateRosterWithEmployees"],
     async (): Promise<AssignedEmployee[] | undefined> => {
-      return await postPopulateRosterWithEmployees(scheduleTemplate?.shifts);
+      return await postPopulateRosterWithEmployees(
+        scheduleTemplate?.shifts,
+        employeesData?.data
+      );
     },
     {
       onSuccess: (data) => {

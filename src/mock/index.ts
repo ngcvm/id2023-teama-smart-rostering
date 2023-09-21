@@ -21,34 +21,44 @@ export const createRosterTemplate = (): RosterTemplate => {
     ],
     shifts: [
       {
+        shiftId: faker.string.uuid(),
         shiftType: 0,
         departmentId: 0,
       },
       {
+        shiftId: faker.string.uuid(),
         shiftType: 0,
         departmentId: 0,
       },
       {
+        shiftId: faker.string.uuid(),
         shiftType: 0,
         departmentId: 0,
       },
       {
+        shiftId: faker.string.uuid(),
         shiftType: 0,
         departmentId: 0,
       },
       {
+        shiftId: faker.string.uuid(),
         shiftType: 1,
         departmentId: 0,
       },
       {
+        shiftId: faker.string.uuid(),
         shiftType: 1,
         departmentId: 0,
       },
       {
+        shiftId: faker.string.uuid(),
+
         shiftType: 1,
         departmentId: 0,
       },
       {
+        shiftId: faker.string.uuid(),
+
         shiftType: 2,
         departmentId: 0,
       },
