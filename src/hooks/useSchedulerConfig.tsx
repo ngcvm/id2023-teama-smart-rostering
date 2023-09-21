@@ -19,6 +19,7 @@ type SchedulerConfigHook = {
   populateRosterWithEmployees: () => void;
   isLoading: boolean;
   assignedEmployees: AssignedEmployee[] | undefined;
+  clearConfigs: () => void;
 };
 
 export const useSchedulerConfig = (): SchedulerConfigHook => {
@@ -181,10 +182,15 @@ export const useSchedulerConfig = (): SchedulerConfigHook => {
     }
   );
 
+  const handleClearConfigs = () => {
+    setConfigs([]);
+  };
+
   return {
     configs,
     populateRosterWithEmployees,
     isLoading: isLoading || isFetching || isRefetching,
     assignedEmployees,
+    clearConfigs: handleClearConfigs,
   };
 };

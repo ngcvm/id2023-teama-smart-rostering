@@ -36,7 +36,7 @@ const ImportModal = ({ isOpen, onClose }: ImportModalProps) => {
       setError(undefined);
       await dispatch(setOperaFileAction(rosterDataFile)).unwrap();
       await dispatch(setRosterEmployeesFileAction(rosterEmployeeFile)).unwrap();
-      onClose();
+      handleCloseModal();
     } catch (err) {
       setError("Failed to import data. Please recheck the size or data format");
       dispatch(clearRosterData());
@@ -44,6 +44,13 @@ const ImportModal = ({ isOpen, onClose }: ImportModalProps) => {
       setRosterEmployeeFile(undefined);
     }
   };
+
+  const handleCloseModal = () => {
+    onClose();
+    setRosterDataFile(undefined);
+    setRosterEmployeeFile(undefined);
+  };
+
   return (
     <Modal opened={isOpen} onClose={onClose} title="Import roster data">
       <Modal.Body>

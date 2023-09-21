@@ -12,7 +12,8 @@ import {
 } from "@mantine/core";
 import { AppConfig } from "../../config";
 import ImportModal from "../../components/ImportModal";
-import { useAppSelector } from "../../hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
+import { clearRosterData } from "../../store/slices/app";
 
 const DEFAULT_HEIGHT = 100;
 
@@ -27,8 +28,10 @@ const Roster: FunctionComponent = () => {
     configs: schedulerConfigs,
     populateRosterWithEmployees,
     isLoading,
+    clearConfigs,
   } = useSchedulerConfig();
   const schedulerRef = useRef<(BryntumScheduler | null)[]>([]);
+  const dispatch = useAppDispatch();
 
   const schedulers = React.useMemo(() => {
     if (schedulerConfigs.length === 0) {
@@ -53,6 +56,11 @@ const Roster: FunctionComponent = () => {
 
   const handlePopulateRosterWithEmployees = async () => {
     populateRosterWithEmployees();
+  };
+
+  const handleResetData = async () => {
+    dispatch(clearRosterData());
+    clearConfigs();
   };
 
   return (
@@ -102,6 +110,18 @@ const Roster: FunctionComponent = () => {
                   onClick={() => handlePopulateRosterWithEmployees()}
                 >
                   Populate roster
+                </Button>
+
+                <Button
+                  disabled={
+                    isLoading ||
+                    !appData?.operaData ||
+                    !appData?.rosterEmployeesData
+                  }
+                  variant="outline"
+                  onClick={() => handleResetData()}
+                >
+                  Reset data
                 </Button>
               </Flex>
             </Grid.Col>
